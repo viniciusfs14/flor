@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo da Memória 💞</title>
+  <style>
+    body {
+      background-color: #ffe4e1;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 30px;
+    }
+    h1 {
+      color: #d63384;
+    }
+    #game-board {
+      width: 440px;
+      margin: 30px auto;
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-gap: 10px;
+    }
+    .card {
+      width: 100px;
+      height: 100px;
+      font-size: 50px;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .matched {
+      background-color: #c3e6cb;
+      cursor: default;
+    }
+    #win-message {
+      font-size: 1.4em;
+      margin-top: 20px;
+      color: #28a745;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Jogo da Memória para o meu Bem 💘</h1>
+  <div id="game-board"></div>
+  <div id="win-message"></div>
+
+  <script>
+    const emojis = ['🌸', '🌼', '💖', '💕', '🌹', '💐', '❤️', '🌷'];
+    let cards = [...emojis, ...emojis]; // duplicar
+    cards = cards.sort(() => 0.5 - Math.random());
+
+    const board = document.getElementById('game-board');
+    const winMessage = document.getElementById('win-message');
+    let firstCard = null;
+    let lockBoard = false;
+    let matchedPairs = 0;
+
+    cards.forEach((emoji, index) => {
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.dataset.index = index;
+      card.dataset.emoji = emoji;
+      card.textContent = '';
+      board.appendChild(card);
+    });
+
+    board.addEventListener('click', (e) => {
+      const clicked = e.target;
+      if (!clicked.classList.contains('card')) return;
+      if (clicked.classList.contains('matched')) return;
+      if (lockBoard || clicked === firstCard) return;
+
+      clicked.textContent = clicked.dataset.emoji;
+
+      if (!firstCard) {
+        firstCard = clicked;
+      } else {
+        lockBoard = true;
+        if (firstCard.dataset.emoji === clicked.dataset.emoji) {
+          firstCard.classList.add('matched');
+          clicked.classList.add('matched');
+          matchedPairs++;
+          resetTurn();
+
+          if (matchedPairs === emojis.length) {
+            winMessage.textContent = 'Você encontrou todos os pares! Te amo! 💘';
+          }
+        } else {
+          setTimeout(() => {
+            firstCard.textContent = '';
+            clicked.textContent = '';
+            resetTurn();
+          }, 800);
+        }
+      }
+    });
+
+    function resetTurn() {
+      firstCard = null;
+      lockBoard = false;
+    }
+  </script>
+</body>
+</html>
