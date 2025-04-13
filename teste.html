@@ -1,208 +1,98 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bom dia, Bem ❤️</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quebra-Cabeça do Amor 💖</title>
   <style>
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(to top, #fff6f6, #ffdada);
-      overflow-x: hidden;
-    }
-    header {
-      text-align: center;
-      padding: 60px 20px 20px;
-      font-size: 2em;
-      color: #e60039;
-    }
-    .carousel {
+      background: #fff0f5;
       display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      gap: 10px;
-      padding: 20px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
-    .carousel img {
-      max-height: 300px;
-      border-radius: 20px;
-      scroll-snap-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    h1 {
+      color: #e60039;
+      margin-bottom: 20px;
     }
-    .message {
-      padding: 30px;
-      font-size: 1.3em;
-      text-align: center;
-      color: #333;
+    #puzzle {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 2px;
     }
-    .sunrise {
-      width: 100%;
-      height: 200px;
-      background: linear-gradient(to top, #ffda8b, #fff6c4);
-      border-radius: 0 0 100% 100%;
-      animation: sunrise 5s ease-in-out forwards;
-    }
-    @keyframes sunrise {
-      from { height: 0; opacity: 0; }
-      to { height: 200px; opacity: 1; }
-    }
-    .hearts {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .heart {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: rgb(7, 245, 19);
-      clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 50% 75%, 20% 100%, 0% 35%);
-      animation: float 6s linear infinite;
-    }
-    @keyframes float {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(100vh) scale(1.5); opacity: 0; }
-    }
-    .button {
-      display: block;
-      margin: 40px auto;
-      padding: 15px 25px;
-      font-size: 1em;
-      color: white;
-      background-color: #e60039;
-      border: none;
-      border-radius: 10px;
+    .piece {
+      width: 100px;
+      height: 100px;
+      background-size: 300px 300px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
-    .button:hover {
-      background-color: #c40030;
+    #message {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: green;
     }
   </style>
 </head>
 <body>
-  <div class="hearts" id="hearts-container"></div>
-
-  <header>
-    Bom dia, Bem 🌞❤️
-  </header>
-
-  <div class="carousel">
-    <img src="imgs/teste.png" alt="Foto 1">
-    <img src="imgs/2.jpg" alt="Foto 2">
-    <img src="imgs/4.png" alt="Foto 3">
-    <img src="imgs/4.png" alt="Foto 4">
-    <img src="imgs/teste.png" alt="Foto 5">
-  </div>
-
-  <div class="message">
-    "Acordar e pensar em você é como sentir o sol pela primeira vez: quente, suave e cheio de promessas. Espero que o seu dia seja tão incrível quanto o sorriso que você dá quando está feliz. Te amo, Bem."
-  </div>
-
-  <button id="btn-memoria" class="button">
-    Clique aqui para uma Surpresa 💝
-  </button>
-
-  <div id="memoria-container" style="display: none; margin-top: 30px;"></div>
+  <h1>Monte o quebra-cabeça 💘</h1>
+  <div id="puzzle"></div>
+  <div id="message"></div>
 
   <script>
-    // Corações animados
-    const containerHearts = document.getElementById('hearts-container');
-    setInterval(() => {
-      const heart = document.createElement('div');
-      heart.className = 'heart';
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
-      containerHearts.appendChild(heart);
-      setTimeout(() => heart.remove(), 6000);
-    }, 300);
+    const imageURL = "imgs/quebra.png"; // imagem real
+    const puzzle = document.getElementById('puzzle');
+    const message = document.getElementById('message');
+    const pieces = [];
 
-    // Botão para mostrar o jogo da memória
-    document.getElementById('btn-memoria').addEventListener('click', () => {
-      const container = document.getElementById('memoria-container');
-      container.style.display = 'block';
-      iniciarJogoMemoria(container);
+    for (let i = 0; i < 9; i++) {
+      const div = document.createElement('div');
+      div.className = 'piece';
+      const row = Math.floor(i / 3);
+      const col = i % 3;
+      div.style.backgroundImage = `url('${imageURL}')`;
+      div.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
+      div.dataset.index = i;
+      pieces.push(div);
+    }
+
+    const shuffled = [...pieces].sort(() => 0.5 - Math.random());
+    shuffled.forEach(piece => puzzle.appendChild(piece));
+
+    let first = null;
+
+    puzzle.addEventListener('click', (e) => {
+      const clicked = e.target;
+      if (!clicked.classList.contains('piece')) return;
+
+      if (!first) {
+        first = clicked;
+      } else if (clicked !== first) {
+        const firstClone = first.cloneNode(true);
+        const secondClone = clicked.cloneNode(true);
+
+        puzzle.replaceChild(secondClone, first);
+        puzzle.replaceChild(firstClone, clicked);
+
+        first = null;
+        checkWin();
+      }
     });
 
-    // Jogo da memória
-    function iniciarJogoMemoria(container) {
-      const emojis = ['🌸', '🌼', '💖', '💕', '🌹', '💐', '❤️', '🌷'];
-      let cards = [...emojis, ...emojis];
-      cards = cards.sort(() => 0.5 - Math.random());
-
-      container.innerHTML = `
-        <h2 style="color: #d63384;">Jogo da Memória para o meu Bem 💘</h2>
-        <div id="game-board" style="width: 440px; margin: 20px auto; display: grid; grid-template-columns: repeat(4, 100px); grid-gap: 10px;"></div>
-        <div id="win-message" style="font-size: 1.2em; margin-top: 20px; color: #28a745;"></div>
-      `;
-
-      const board = container.querySelector('#game-board');
-      const winMessage = container.querySelector('#win-message');
-      let firstCard = null;
-      let lockBoard = false;
-      let matchedPairs = 0;
-
-      cards.forEach((emoji, index) => {
-        const card = document.createElement('div');
-        card.classList.add('card');
-        card.dataset.index = index;
-        card.dataset.emoji = emoji;
-        card.textContent = '';
-        Object.assign(card.style, {
-          width: '100px',
-          height: '100px',
-          fontSize: '50px',
-          backgroundColor: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '12px',
-          cursor: 'pointer',
-          userSelect: 'none',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-        });
-        board.appendChild(card);
+    function checkWin() {
+      const pieces = document.querySelectorAll('.piece');
+      let correct = true;
+      pieces.forEach((p, i) => {
+        if (p.dataset.index != i) correct = false;
       });
-
-      board.addEventListener('click', (e) => {
-        const clicked = e.target;
-        if (!clicked.classList.contains('card')) return;
-        if (clicked.classList.contains('matched')) return;
-        if (lockBoard || clicked === firstCard) return;
-
-        clicked.textContent = clicked.dataset.emoji;
-
-        if (!firstCard) {
-          firstCard = clicked;
-        } else {
-          lockBoard = true;
-          if (firstCard.dataset.emoji === clicked.dataset.emoji) {
-            firstCard.classList.add('matched');
-            clicked.classList.add('matched');
-            matchedPairs++;
-            resetTurn();
-
-            if (matchedPairs === emojis.length) {
-              winMessage.textContent = 'Você encontrou todos os pares! Te amo! 💘';
-            }
-          } else {
-            setTimeout(() => {
-              firstCard.textContent = '';
-              clicked.textContent = '';
-              resetTurn();
-            }, 800);
-          }
-        }
-      });
-
-      function resetTurn() {
-        firstCard = null;
-        lockBoard = false;
+      if (correct) {
+        message.innerText = 'Parabéns! Você completou o quebra-cabeça 💕';
       }
     }
   </script>
